@@ -16,32 +16,28 @@ pub fn karmarkar(
         let vk = b - amat * &ans;
         let mut vk2 = DVector::<f64>::zeros(2);
         vk2.cmpy(1.0, &vk, &vk, 0.0);
-        let ivk2 = DMatrix::<f64>::from_diagonal(&vk2).try_inverse();
-        if let Some(v) = ivk2 {
-            let gmat = amat.transpose() * v  * amat;
-            let pgmat = gmat.pseudo_inverse(1.0e-9);
-            if let Ok(v) = pgmat {
-                let d = v * c;
-                if d.norm() < eps {
-                    break;
+        let ivk2 = DMatrix::<f64>::from_diagonal(&vk2).try_inverse().ok_or("Not found inverse.")?;
+        let gmat = amat.transpose() * ivk2  * amat;
+        let pgmat = gmat.pseudo_inverse(1.0e-9)?;
+        let d = pgmat * c;
+        if d.norm() < eps {
+            break;
+        }
+        let hv = -amat * &d;
+        if hv.amax() <= 0.0 {
+            return Err("Unbounded!");
+        }
+        let mut sa = f64::INFINITY;
+        for i in 0..hv.nrows() {
+             if hv[i] > 0.0 {
+                let sa_tmp = vk[i] / hv[i];
+                if sa > sa_tmp {
+                    sa = sa_tmp;
                 }
-                let hv = -amat * &d;
-                if hv.amax() <= 0.0 {
-                    return Err("Unbounded!");
-                }
-                let mut sa = f64::INFINITY;
-                for i in 0..hv.nrows() {
-                    if hv[i] > 0.0 {
-                        let sa_tmp = vk[i] / hv[i];
-                        if sa > sa_tmp {
-                            sa = sa_tmp;
-                        }
-                    }
-                }
-                let alpha = gamma * sa;
-                ans = ans - alpha * &d;
             }
         }
+        let alpha = gamma * sa;
+        ans = ans - alpha * &d;
     }
     return Ok(ans);
 }
