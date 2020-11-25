@@ -3,8 +3,17 @@ name = "karmarkar"
 version = "0.1.0"
 authors = ["nekanat <nekanat.stock@gmail.com>"]
 edition = "2018"
+description = "Karmarkar algorithm for Rust."
+license = "MIT"
+readme = "README.md"
+documentation = "http://neka-nat.github.io/karmarkar/karmarkar"
+homepage = "https://github.com/neka-nat/karmarkar"
+repository = "https://github.com/neka-nat/karmarkar"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[badges]
+github = { repository = "neka-nat/karmarkar", workflow = "Rust" }
 
 [dependencies]
 nalgebra = "0.21"
