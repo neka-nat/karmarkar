@@ -1,7 +1,7 @@
 extern crate karmarkar as kk;
 extern crate nalgebra as na;
-use na::{DMatrix, DVector};
 use kk::karmarkar;
+use na::{DMatrix, DVector};
 
 pub fn main() {
     let c = DVector::<f64>::from_vec(vec![-1.0, -1.0]);

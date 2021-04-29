@@ -9,15 +9,16 @@ pub fn karmarkar(
     gamma: f64,
     eps: f64,
     nloop: i32,
-) -> Result<DVector<f64>, &'static str>
-{
+) -> Result<DVector<f64>, &'static str> {
     let mut ans = x.clone();
     for _ in 0..nloop {
         let vk = b - amat * &ans;
         let mut vk2 = DVector::<f64>::zeros(2);
         vk2.cmpy(1.0, &vk, &vk, 0.0);
-        let ivk2 = DMatrix::<f64>::from_diagonal(&vk2).try_inverse().ok_or("Not found inverse.")?;
-        let gmat = amat.transpose() * ivk2  * amat;
+        let ivk2 = DMatrix::<f64>::from_diagonal(&vk2)
+            .try_inverse()
+            .ok_or("Not found inverse.")?;
+        let gmat = amat.transpose() * ivk2 * amat;
         let pgmat = gmat.pseudo_inverse(1.0e-9)?;
         let d = pgmat * c;
         if d.norm() < eps {
@@ -28,17 +29,22 @@ pub fn karmarkar(
             return Err("Unbounded!");
         }
         let sa = (0..hv.nrows())
-            .filter_map(|i| if hv[i] > 0.0 { Some(vk[i] / hv[i]) } else { None })
-            .fold(0.0/0.0, |m, v| v.min(m));
+            .filter_map(|i| {
+                if hv[i] > 0.0 {
+                    Some(vk[i] / hv[i])
+                } else {
+                    None
+                }
+            })
+            .fold(0.0 / 0.0, |m, v| v.min(m));
         if sa.is_nan() {
             break;
         }
         let alpha = gamma * sa;
-        ans = ans - alpha * &d;
+        ans -= alpha * &d;
     }
-    return Ok(ans);
+    Ok(ans)
 }
-
 
 #[test]
 fn it_works() {
