@@ -27,14 +27,11 @@ pub fn karmarkar(
         if hv.amax() <= 0.0 {
             return Err("Unbounded!");
         }
-        let mut sa = f64::INFINITY;
-        for i in 0..hv.nrows() {
-             if hv[i] > 0.0 {
-                let sa_tmp = vk[i] / hv[i];
-                if sa > sa_tmp {
-                    sa = sa_tmp;
-                }
-            }
+        let sa = (0..hv.nrows())
+            .filter_map(|i| if hv[i] > 0.0 { Some(vk[i] / hv[i]) } else { None })
+            .fold(0.0/0.0, |m, v| v.min(m));
+        if sa.is_nan() {
+            break;
         }
         let alpha = gamma * sa;
         ans = ans - alpha * &d;
