@@ -13,7 +13,7 @@ pub fn karmarkar(
     let mut ans = x.clone();
     for _ in 0..nloop {
         let vk = b - amat * &ans;
-        let mut vk2 = DVector::<f64>::zeros(2);
+        let mut vk2 = DVector::<f64>::zeros(vk.len());
         vk2.cmpy(1.0, &vk, &vk, 0.0);
         let ivk2 = DMatrix::<f64>::from_diagonal(&vk2)
             .try_inverse()
