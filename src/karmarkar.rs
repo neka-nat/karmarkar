@@ -1,21 +1,35 @@
 extern crate nalgebra as na;
-use na::{DMatrix, DVector};
+use na::{
+    base::allocator::Allocator, DefaultAllocator, DimMin, DimName, DimNameAdd, DimSub, MatrixN,
+    VectorN, U1,
+};
 
-pub fn karmarkar(
-    c: &DVector<f64>,
-    amat: &DMatrix<f64>,
-    b: &DVector<f64>,
-    x: &DVector<f64>,
+pub fn karmarkar<D>(
+    c: &VectorN<f64, D>,
+    amat: &MatrixN<f64, D>,
+    b: &VectorN<f64, D>,
+    x: &VectorN<f64, D>,
     gamma: f64,
     eps: f64,
-    nloop: i32,
-) -> Result<DVector<f64>, &'static str> {
+    nloop: usize,
+) -> Result<VectorN<f64, D>, &'static str>
+where
+    D: DimName + DimNameAdd<D> + DimMin<D>,
+    <D as DimMin<D>>::Output: DimSub<U1>,
+    DefaultAllocator: Allocator<f64, D>
+        + Allocator<f64, D, D>
+        + Allocator<f64, <D as DimMin<D>>::Output>
+        + Allocator<f64, <D as DimMin<D>>::Output, D>
+        + Allocator<f64, D, <D as DimMin<D>>::Output>
+        + Allocator<f64, <<D as DimMin<D>>::Output as DimSub<U1>>::Output>
+        + Allocator<f64, <D as DimMin<D>>::Output, <D as DimMin<D>>::Output>,
+{
     let mut ans = x.clone();
     for _ in 0..nloop {
         let vk = b - amat * &ans;
-        let mut vk2 = DVector::<f64>::zeros(vk.len());
+        let mut vk2 = VectorN::<f64, D>::zeros();
         vk2.cmpy(1.0, &vk, &vk, 0.0);
-        let ivk2 = DMatrix::<f64>::from_diagonal(&vk2)
+        let ivk2 = MatrixN::<f64, D>::from_diagonal(&vk2)
             .try_inverse()
             .ok_or("Not found inverse.")?;
         let gmat = amat.transpose() * ivk2 * amat;
@@ -48,12 +62,13 @@ pub fn karmarkar(
 
 #[test]
 fn it_works() {
-    let c = DVector::<f64>::from_vec(vec![-1.0, -1.0]);
-    let amat = DMatrix::<f64>::from_vec(2, 2, vec![1.0, 1.0, 1.0, -1.0]);
-    let b = DVector::<f64>::from_vec(vec![0.5, 1.0]);
-    let x = DVector::<f64>::from_vec(vec![-2.0, -2.0]);
+    use na::U2;
+    let c = VectorN::<f64, U2>::from_vec(vec![-1.0, -1.0]);
+    let amat = MatrixN::<f64, U2>::from_vec(vec![1.0, 1.0, 1.0, -1.0]);
+    let b = VectorN::<f64, U2>::from_vec(vec![0.5, 1.0]);
+    let x = VectorN::<f64, U2>::from_vec(vec![-2.0, -2.0]);
     let ans = karmarkar(&c, &amat, &b, &x, 0.5, 1.0e-3, 30);
-    let expected = DVector::<f64>::from_vec(vec![0.23242187, 0.23242187]);
+    let expected = VectorN::<f64, U2>::from_vec(vec![0.23242187, 0.23242187]);
     println!("{:?}", ans);
     if let Ok(v) = ans {
         const TORELANCE: f64 = 1.0e-6;
