@@ -64,25 +64,54 @@
 <span id="61">61</span>
 <span id="62">62</span>
 <span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">nalgebra</span> <span class="kw">as</span> <span class="ident">na</span>;
-<span class="kw">use</span> <span class="ident">na</span>::{<span class="ident">DMatrix</span>, <span class="ident">DVector</span>};
+<span class="kw">use</span> <span class="ident">na</span>::{
+    <span class="ident">base</span>::<span class="ident">allocator</span>::<span class="ident">Allocator</span>, <span class="ident">DefaultAllocator</span>, <span class="ident">DimMin</span>, <span class="ident">DimName</span>, <span class="ident">DimNameAdd</span>, <span class="ident">DimSub</span>, <span class="ident">MatrixN</span>,
+    <span class="ident">VectorN</span>, <span class="ident">U1</span>,
+};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">karmarkar</span>(
-    <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">DVector</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-    <span class="ident">amat</span>: <span class="kw-2">&amp;</span><span class="ident">DMatrix</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-    <span class="ident">b</span>: <span class="kw-2">&amp;</span><span class="ident">DVector</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-    <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">DVector</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">karmarkar</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(
+    <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">VectorN</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>,
+    <span class="ident">amat</span>: <span class="kw-2">&amp;</span><span class="ident">MatrixN</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>,
+    <span class="ident">b</span>: <span class="kw-2">&amp;</span><span class="ident">VectorN</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>,
+    <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">VectorN</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>,
     <span class="ident">gamma</span>: <span class="ident">f64</span>,
     <span class="ident">eps</span>: <span class="ident">f64</span>,
-    <span class="ident">nloop</span>: <span class="ident">i32</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DVector</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="ident">nloop</span>: <span class="ident">usize</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">VectorN</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">D</span>: <span class="ident">DimName</span> <span class="op">+</span> <span class="ident">DimNameAdd</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
+    <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span>: <span class="ident">DimSub</span><span class="op">&lt;</span><span class="ident">U1</span><span class="op">&gt;</span>,
+    <span class="ident">DefaultAllocator</span>: <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span>, <span class="ident">D</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span>, <span class="ident">D</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span> <span class="kw">as</span> <span class="ident">DimSub</span><span class="op">&lt;</span><span class="ident">U1</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Allocator</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">DimMin</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>,
+{
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ans</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">clone</span>();
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">nloop</span> {
         <span class="kw">let</span> <span class="ident">vk</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">amat</span> <span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">ans</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vk2</span> <span class="op">=</span> <span class="ident">DVector</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">zeros</span>(<span class="ident">vk</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vk2</span> <span class="op">=</span> <span class="ident">VectorN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">zeros</span>();
         <span class="ident">vk2</span>.<span class="ident">cmpy</span>(<span class="number">1.0</span>, <span class="kw-2">&amp;</span><span class="ident">vk</span>, <span class="kw-2">&amp;</span><span class="ident">vk</span>, <span class="number">0.0</span>);
-        <span class="kw">let</span> <span class="ident">ivk2</span> <span class="op">=</span> <span class="ident">DMatrix</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_diagonal</span>(<span class="kw-2">&amp;</span><span class="ident">vk2</span>)
+        <span class="kw">let</span> <span class="ident">ivk2</span> <span class="op">=</span> <span class="ident">MatrixN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">from_diagonal</span>(<span class="kw-2">&amp;</span><span class="ident">vk2</span>)
             .<span class="ident">try_inverse</span>()
             .<span class="ident">ok_or</span>(<span class="string">&quot;Not found inverse.&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">gmat</span> <span class="op">=</span> <span class="ident">amat</span>.<span class="ident">transpose</span>() <span class="op">*</span> <span class="ident">ivk2</span> <span class="op">*</span> <span class="ident">amat</span>;
@@ -115,12 +144,13 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">it_works</span>() {
-    <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">DVector</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1.0</span>, <span class="op">-</span><span class="number">1.0</span>]);
-    <span class="kw">let</span> <span class="ident">amat</span> <span class="op">=</span> <span class="ident">DMatrix</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="number">2</span>, <span class="number">2</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="op">-</span><span class="number">1.0</span>]);
-    <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">DVector</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.5</span>, <span class="number">1.0</span>]);
-    <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">DVector</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">2.0</span>, <span class="op">-</span><span class="number">2.0</span>]);
+    <span class="kw">use</span> <span class="ident">na</span>::<span class="ident">U2</span>;
+    <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">VectorN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">U2</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1.0</span>, <span class="op">-</span><span class="number">1.0</span>]);
+    <span class="kw">let</span> <span class="ident">amat</span> <span class="op">=</span> <span class="ident">MatrixN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">U2</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="op">-</span><span class="number">1.0</span>]);
+    <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">VectorN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">U2</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.5</span>, <span class="number">1.0</span>]);
+    <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">VectorN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">U2</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">2.0</span>, <span class="op">-</span><span class="number">2.0</span>]);
     <span class="kw">let</span> <span class="ident">ans</span> <span class="op">=</span> <span class="ident">karmarkar</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>, <span class="kw-2">&amp;</span><span class="ident">amat</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>, <span class="number">0.5</span>, <span class="number">1.0e-3</span>, <span class="number">30</span>);
-    <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">DVector</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.23242187</span>, <span class="number">0.23242187</span>]);
+    <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">VectorN</span>::<span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">U2</span><span class="op">&gt;</span>::<span class="ident">from_vec</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.23242187</span>, <span class="number">0.23242187</span>]);
     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">ans</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">ans</span> {
         <span class="kw">const</span> <span class="ident">TORELANCE</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1.0e-6</span>;
