@@ -4,6 +4,7 @@ use na::{
     VectorN, U1,
 };
 
+/// max c.T * x, subj A * x < b
 pub fn karmarkar<D>(
     c: &VectorN<f64, D>,
     amat: &MatrixN<f64, D>,
