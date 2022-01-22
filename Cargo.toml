@@ -16,4 +16,5 @@ repository = "https://github.com/neka-nat/karmarkar"
 github = { repository = "neka-nat/karmarkar", workflow = "Rust" }
 
 [dependencies]
+num-traits = "0.2.14"
 nalgebra = "0.21"
