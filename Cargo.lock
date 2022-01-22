@@ -45,7 +45,7 @@ dependencies = [
 
 [[package]]
 name = "karmarkar"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "nalgebra",
  "num-traits",
