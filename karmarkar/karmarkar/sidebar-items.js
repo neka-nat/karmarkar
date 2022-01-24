@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["karmarkar",""]]});
+initSidebarItems({"fn":[["karmarkar","max c.T * x, subj A * x < b"]]});
