@@ -32,9 +32,7 @@ where
         let vk = b - amat * &ans;
         let mut vk2 = VectorN::<F, D>::zeros();
         vk2.cmpy(F::one(), &vk, &vk, F::zero());
-        let ivk2 = MatrixN::<F, D>::from_diagonal(&vk2)
-            .try_inverse()
-            .ok_or("Not found inverse.")?;
+        let ivk2 = MatrixN::<F, D>::from_diagonal(&VectorN::<F, D>::identity().component_div(&vk2));
         let gmat = amat.transpose() * ivk2 * amat;
         let pgmat = gmat.pseudo_inverse(F::from_f32(1.0e-9).ok_or("Fail to convert f32 to F.")?)?;
         let d = pgmat * c;
