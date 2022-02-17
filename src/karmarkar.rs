@@ -28,13 +28,14 @@ where
         + Allocator<F, <D as DimMin<D>>::Output, <D as DimMin<D>>::Output>,
 {
     let mut ans = x.clone();
+    let tol = F::from_f32(1.0e-9).ok_or("Fail to convert f32 to F.")?;
     for _ in 0..nloop {
         let vk = b - amat * &ans;
         let mut vk2 = VectorN::<F, D>::zeros();
         vk2.cmpy(F::one(), &vk, &vk, F::zero());
         let ivk2 = MatrixN::<F, D>::from_diagonal(&VectorN::<F, D>::identity().component_div(&vk2));
         let gmat = amat.transpose() * ivk2 * amat;
-        let pgmat = gmat.pseudo_inverse(F::from_f32(1.0e-9).ok_or("Fail to convert f32 to F.")?)?;
+        let pgmat = gmat.pseudo_inverse(tol)?;
         let d = pgmat * c;
         if d.norm() < eps {
             break;
